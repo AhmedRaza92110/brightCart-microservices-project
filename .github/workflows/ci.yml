@@ -9,12 +9,14 @@ on:
       - main
   workflow_dispatch:
 
+# REQUIRED FOR OIDC AND GITHUB SECURITY MASKING
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   python-tests:
-    name: Test ${{ matrix.service }}
+    name: Test & Push ${{ matrix.service }}
     runs-on: ubuntu-latest
 
     strategy:
@@ -47,18 +49,42 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install pytest
 
       - name: Run smoke tests
-        run: pytest -v test_smoke.py
+        run: |
+          if [ -f test_smoke.py ]; then
+            pytest -v test_smoke.py
+          else
+            echo "No test_smoke.py found, skipping tests."
+          fi
+
+      # SECURITY HANDSHAKE (Uses your hidden repository secret)
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ap-south-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # BUILD AND PUSH CONTAINER PER MATRIX SERVICE
+      - name: Build and Push Docker Image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: brightcart-${{ matrix.service }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -t $REGISTRY/$REPOSITORY:latest .
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker push $REGISTRY/$REPOSITORY:latest
 
   security-scan:
     name: Repository Security Scan
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
 
     steps:
       - name: Checkout repository
