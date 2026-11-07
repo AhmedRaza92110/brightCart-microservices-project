@@ -1,0 +1,78 @@
+# GitOps source of truth: CI updates image.tag to the immutable commit SHA.
+{
+  "namespace": "brightcart",
+  "frontend": {
+    "replicas": 1,
+    "image": {
+      "repository": "nginx",
+      "tag": "1.27-alpine",
+      "pullPolicy": "IfNotPresent"
+    },
+    "port": 80
+  },
+  "services": {
+    "auth-service": {
+      "replicas": 1,
+      "image": {
+        "repository": "ghcr.io/OWNER/REPO-auth-service",
+        "tag": "latest",
+        "pullPolicy": "IfNotPresent"
+      },
+      "port": 8001
+    },
+    "profile-service": {
+      "replicas": 1,
+      "image": {
+        "repository": "ghcr.io/OWNER/REPO-profile-service",
+        "tag": "latest",
+        "pullPolicy": "IfNotPresent"
+      },
+      "port": 8002
+    },
+    "product-service": {
+      "replicas": 1,
+      "image": {
+        "repository": "ghcr.io/OWNER/REPO-product-service",
+        "tag": "latest",
+        "pullPolicy": "IfNotPresent"
+      },
+      "port": 8003
+    },
+    "order-service": {
+      "replicas": 1,
+      "image": {
+        "repository": "ghcr.io/OWNER/REPO-order-service",
+        "tag": "latest",
+        "pullPolicy": "IfNotPresent"
+      },
+      "port": 8004
+    },
+    "payment-service": {
+      "replicas": 1,
+      "image": {
+        "repository": "ghcr.io/OWNER/REPO-payment-service",
+        "tag": "latest",
+        "pullPolicy": "IfNotPresent"
+      },
+      "port": 8005
+    },
+    "message-service": {
+      "replicas": 1,
+      "image": {
+        "repository": "ghcr.io/OWNER/REPO-message-service",
+        "tag": "latest",
+        "pullPolicy": "IfNotPresent"
+      },
+      "port": 8006
+    },
+    "history-service": {
+      "replicas": 1,
+      "image": {
+        "repository": "ghcr.io/OWNER/REPO-history-service",
+        "tag": "latest",
+        "pullPolicy": "IfNotPresent"
+      },
+      "port": 8007
+    }
+  }
+}

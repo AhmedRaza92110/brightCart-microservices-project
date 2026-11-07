@@ -1,0 +1,110 @@
+name: BrightCart CI and GitOps CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  SERVICES: "auth-service profile-service product-service order-service payment-service message-service history-service"
+
+jobs:
+  test:
+    name: Validate ${{ matrix.service }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - auth-service
+          - profile-service
+          - product-service
+          - order-service
+          - payment-service
+          - message-service
+          - history-service
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install -r services/${{ matrix.service }}/requirements.txt pytest
+      - name: Compile Python
+        run: python -m compileall -q services/${{ matrix.service }}
+      - name: Smoke test
+        working-directory: services/${{ matrix.service }}
+        run: pytest -q
+
+  build-and-publish:
+    name: Build and publish images
+    needs: test
+    if: github.event_name != 'pull_request' && !startsWith(github.event.head_commit.message, 'chore(gitops):')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set lowercase image namespace
+        id: vars
+        run: echo "owner=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build and push seven services
+        env:
+          OWNER: ${{ steps.vars.outputs.owner }}
+          REPO: ${{ github.event.repository.name }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          REPO_LC="$(echo "$REPO" | tr '[:upper:]' '[:lower:]')"
+          for service in $SERVICES; do
+            docker build \
+              -t "$REGISTRY/$OWNER/$REPO_LC-$service:$SHA" \
+              "services/$service"
+            docker push "$REGISTRY/$OWNER/$REPO_LC-$service:$SHA"
+          done
+          docker build -t "$REGISTRY/$OWNER/$REPO_LC-frontend:$SHA" frontend
+          docker push "$REGISTRY/$OWNER/$REPO_LC-frontend:$SHA"
+      - name: Install YAML updater dependency
+        run: pip install pyyaml
+      - name: Update Helm image tags for Argo CD
+        env:
+          OWNER: ${{ steps.vars.outputs.owner }}
+          REPO: ${{ github.event.repository.name }}
+          SHA: ${{ github.sha }}
+        run: |
+          python - <<'PY'
+          import os, yaml
+          path = "deploy/helm/brightcart/values.yaml"
+          with open(path) as f:
+              values = yaml.safe_load(f)
+          owner = os.environ["OWNER"]
+          repo = os.environ["REPO"].lower()
+          sha = os.environ["SHA"]
+          for service, config in values["services"].items():
+              config["image"]["repository"] = f"ghcr.io/{owner}/{repo}-{service}"
+              config["image"]["tag"] = sha
+          values["frontend"]["image"]["repository"] = f"ghcr.io/{owner}/{repo}-frontend"
+          values["frontend"]["image"]["tag"] = sha
+          with open(path, "w") as f:
+              yaml.safe_dump(values, f, sort_keys=False)
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add deploy/helm/brightcart/values.yaml
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(gitops): deploy ${GITHUB_SHA}"
+            git push
+          fi
