@@ -1,0 +1,34 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ECRAuthentication",
+      "Effect": "Allow",
+      "Action": [
+        "ecr:GetAuthorizationToken"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "PushBrightCartImages",
+      "Effect": "Allow",
+      "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:CompleteLayerUpload",
+        "ecr:InitiateLayerUpload",
+        "ecr:PutImage",
+        "ecr:UploadLayerPart"
+      ],
+      "Resource": [
+        "arn:aws:ecr:ap-south-1:379098698223:repository/brightcart-frontend",
+        "arn:aws:ecr:ap-south-1:379098698223:repository/brightcart-auth-service",
+        "arn:aws:ecr:ap-south-1:379098698223:repository/brightcart-profile-service",
+        "arn:aws:ecr:ap-south-1:379098698223:repository/brightcart-product-service",
+        "arn:aws:ecr:ap-south-1:379098698223:repository/brightcart-order-service",
+        "arn:aws:ecr:ap-south-1:379098698223:repository/brightcart-payment-service",
+        "arn:aws:ecr:ap-south-1:379098698223:repository/brightcart-message-service",
+        "arn:aws:ecr:ap-south-1:379098698223:repository/brightcart-history-service"
+      ]
+    }
+  ]
+}

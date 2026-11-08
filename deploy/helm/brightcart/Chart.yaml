@@ -1,6 +1,6 @@
 apiVersion: v2
 name: brightcart
-description: BrightCart e-commerce microservices demo
+description: BrightCart e-commerce microservices 
 type: application
 version: 0.1.0
 appVersion: "1.0.0"

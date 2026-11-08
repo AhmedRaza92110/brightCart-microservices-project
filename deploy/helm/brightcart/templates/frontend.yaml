@@ -40,7 +40,7 @@
 frontend:
   replicas: 1
   image:
-    repository: YOUR_AWS_ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/brightcart-frontend
+    repository: 379098698223.dkr.ecr.ap-south-1.amazonaws.com/brightcart-frontend
     tag: YOUR_COMMIT_SHA
     pullPolicy: IfNotPresent
   port: 80

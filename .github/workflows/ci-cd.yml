@@ -9,10 +9,8 @@ on:
 
 permissions:
   contents: write
-  packages: write
 
 env:
-  REGISTRY: ghcr.io
   SERVICES: "auth-service profile-service product-service order-service payment-service message-service history-service"
 
 jobs:
@@ -50,20 +48,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set lowercase image namespace
-        id: vars
-        run: echo "owner=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
-      - name: Login to GHCR
+      - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Build and push seven services
+      - name: Build and push services and frontend
         env:
-          OWNER: ${{ steps.vars.outputs.owner }}
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
           REPO: ${{ github.event.repository.name }}
           SHA: ${{ github.sha }}
         run: |
@@ -71,17 +65,17 @@ jobs:
           REPO_LC="$(echo "$REPO" | tr '[:upper:]' '[:lower:]')"
           for service in $SERVICES; do
             docker build \
-              -t "$REGISTRY/$OWNER/$REPO_LC-$service:$SHA" \
+              -t "$DOCKER_USER/$REPO_LC-$service:$SHA" \
               "services/$service"
-            docker push "$REGISTRY/$OWNER/$REPO_LC-$service:$SHA"
+            docker push "$DOCKER_USER/$REPO_LC-$service:$SHA"
           done
-          docker build -t "$REGISTRY/$OWNER/$REPO_LC-frontend:$SHA" frontend
-          docker push "$REGISTRY/$OWNER/$REPO_LC-frontend:$SHA"
+          docker build -t "$DOCKER_USER/$REPO_LC-frontend:$SHA" frontend
+          docker push "$DOCKER_USER/$REPO_LC-frontend:$SHA"
       - name: Install YAML updater dependency
         run: pip install pyyaml
       - name: Update Helm image tags for Argo CD
         env:
-          OWNER: ${{ steps.vars.outputs.owner }}
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
           REPO: ${{ github.event.repository.name }}
           SHA: ${{ github.sha }}
         run: |
@@ -90,13 +84,13 @@ jobs:
           path = "deploy/helm/brightcart/values.yaml"
           with open(path) as f:
               values = yaml.safe_load(f)
-          owner = os.environ["OWNER"]
+          docker_user = os.environ["DOCKER_USER"]
           repo = os.environ["REPO"].lower()
           sha = os.environ["SHA"]
           for service, config in values["services"].items():
-              config["image"]["repository"] = f"ghcr.io/{owner}/{repo}-{service}"
+              config["image"]["repository"] = f"{docker_user}/{repo}-{service}"
               config["image"]["tag"] = sha
-          values["frontend"]["image"]["repository"] = f"ghcr.io/{owner}/{repo}-frontend"
+          values["frontend"]["image"]["repository"] = f"{docker_user}/{repo}-frontend"
           values["frontend"]["image"]["tag"] = sha
           with open(path, "w") as f:
               yaml.safe_dump(values, f, sort_keys=False)
