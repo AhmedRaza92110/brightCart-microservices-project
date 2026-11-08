@@ -1,64 +1,57 @@
 frontend:
   replicas: 1
   image:
-    repository: your-dockerhub-username/brightcart-frontend
-    tag: latest
+    repository: ahmedrazadevops/brightcart-microservices-project-frontend
+    tag: 44ec0e99abfbf75ef80f5e20950a52213a9326ab
     pullPolicy: IfNotPresent
   port: 80
-
 services:
   auth-service:
     replicas: 1
     image:
-      repository: your-dockerhub-username/brightcart-auth-service
-      tag: latest
+      repository: ahmedrazadevops/brightcart-microservices-project-auth-service
+      tag: 44ec0e99abfbf75ef80f5e20950a52213a9326ab
       pullPolicy: IfNotPresent
     port: 8001
-
   profile-service:
     replicas: 1
     image:
-      repository: your-dockerhub-username/brightcart-profile-service
-      tag: latest
+      repository: ahmedrazadevops/brightcart-microservices-project-profile-service
+      tag: 44ec0e99abfbf75ef80f5e20950a52213a9326ab
       pullPolicy: IfNotPresent
     port: 8002
-
   product-service:
     replicas: 1
     image:
-      repository: your-dockerhub-username/brightcart-product-service
-      tag: latest
+      repository: ahmedrazadevops/brightcart-microservices-project-product-service
+      tag: 44ec0e99abfbf75ef80f5e20950a52213a9326ab
       pullPolicy: IfNotPresent
     port: 8003
-
   order-service:
     replicas: 1
     image:
-      repository: your-dockerhub-username/brightcart-order-service
-      tag: latest
+      repository: ahmedrazadevops/brightcart-microservices-project-order-service
+      tag: 44ec0e99abfbf75ef80f5e20950a52213a9326ab
       pullPolicy: IfNotPresent
     port: 8004
-
   payment-service:
     replicas: 1
     image:
-      repository: your-dockerhub-username/brightcart-payment-service
-      tag: latest
+      repository: ahmedrazadevops/brightcart-microservices-project-payment-service
+      tag: 44ec0e99abfbf75ef80f5e20950a52213a9326ab
       pullPolicy: IfNotPresent
     port: 8005
-
   message-service:
     replicas: 1
     image:
-      repository: your-dockerhub-username/brightcart-message-service
-      tag: latest
+      repository: ahmedrazadevops/brightcart-microservices-project-message-service
+      tag: 44ec0e99abfbf75ef80f5e20950a52213a9326ab
       pullPolicy: IfNotPresent
     port: 8006
-
   history-service:
     replicas: 1
     image:
-      repository: your-dockerhub-username/brightcart-history-service
-      tag: latest
+      repository: ahmedrazadevops/brightcart-microservices-project-history-service
+      tag: 44ec0e99abfbf75ef80f5e20950a52213a9326ab
       pullPolicy: IfNotPresent
     port: 8007
