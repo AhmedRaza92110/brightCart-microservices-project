@@ -2,7 +2,7 @@ frontend:
   replicas: 1
   image:
     repository: ahmedrazadevops/brightcart-microservices-project-frontend
-    tag: e5ad0b1bc7ef55823b4b447554e90f62f35739f3
+    tag: 643d6a100c6ddf9a829292485071079eb6122b95
     pullPolicy: IfNotPresent
   port: 80
 services:
@@ -10,48 +10,48 @@ services:
     replicas: 1
     image:
       repository: ahmedrazadevops/brightcart-microservices-project-auth-service
-      tag: e5ad0b1bc7ef55823b4b447554e90f62f35739f3
+      tag: 643d6a100c6ddf9a829292485071079eb6122b95
       pullPolicy: IfNotPresent
     port: 8001
   profile-service:
     replicas: 1
     image:
       repository: ahmedrazadevops/brightcart-microservices-project-profile-service
-      tag: e5ad0b1bc7ef55823b4b447554e90f62f35739f3
+      tag: 643d6a100c6ddf9a829292485071079eb6122b95
       pullPolicy: IfNotPresent
     port: 8002
   product-service:
     replicas: 1
     image:
       repository: ahmedrazadevops/brightcart-microservices-project-product-service
-      tag: e5ad0b1bc7ef55823b4b447554e90f62f35739f3
+      tag: 643d6a100c6ddf9a829292485071079eb6122b95
       pullPolicy: IfNotPresent
     port: 8003
   order-service:
     replicas: 1
     image:
       repository: ahmedrazadevops/brightcart-microservices-project-order-service
-      tag: e5ad0b1bc7ef55823b4b447554e90f62f35739f3
+      tag: 643d6a100c6ddf9a829292485071079eb6122b95
       pullPolicy: IfNotPresent
     port: 8004
   payment-service:
     replicas: 1
     image:
       repository: ahmedrazadevops/brightcart-microservices-project-payment-service
-      tag: e5ad0b1bc7ef55823b4b447554e90f62f35739f3
+      tag: 643d6a100c6ddf9a829292485071079eb6122b95
       pullPolicy: IfNotPresent
     port: 8005
   message-service:
     replicas: 1
     image:
       repository: ahmedrazadevops/brightcart-microservices-project-message-service
-      tag: e5ad0b1bc7ef55823b4b447554e90f62f35739f3
+      tag: 643d6a100c6ddf9a829292485071079eb6122b95
       pullPolicy: IfNotPresent
     port: 8006
   history-service:
     replicas: 1
     image:
       repository: ahmedrazadevops/brightcart-microservices-project-history-service
-      tag: e5ad0b1bc7ef55823b4b447554e90f62f35739f3
+      tag: 643d6a100c6ddf9a829292485071079eb6122b95
       pullPolicy: IfNotPresent
     port: 8007
