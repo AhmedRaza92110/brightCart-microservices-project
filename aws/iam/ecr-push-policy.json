@@ -20,14 +20,14 @@
         "ecr:UploadLayerPart"
       ],
       "Resource": [
-        "arn:aws:ecr:ap-south-1:379098698223:repository/brightcart-frontend",
-        "arn:aws:ecr:ap-south-1:379098698223:repository/brightcart-auth-service",
-        "arn:aws:ecr:ap-south-1:379098698223:repository/brightcart-profile-service",
-        "arn:aws:ecr:ap-south-1:379098698223:repository/brightcart-product-service",
-        "arn:aws:ecr:ap-south-1:379098698223:repository/brightcart-order-service",
-        "arn:aws:ecr:ap-south-1:379098698223:repository/brightcart-payment-service",
-        "arn:aws:ecr:ap-south-1:379098698223:repository/brightcart-message-service",
-        "arn:aws:ecr:ap-south-1:379098698223:repository/brightcart-history-service"
+        "acc:repository/brightcart-frontend",
+        "acc:repository/brightcart-auth-service",
+        "acc:repository/brightcart-profile-service",
+        "acc:repository/brightcart-product-service",
+        "acc:repository/brightcart-order-service",
+        "acc:repository/brightcart-payment-service",
+        "acc:repository/brightcart-message-service",
+        "acc:repository/brightcart-history-service"
       ]
     }
   ]
